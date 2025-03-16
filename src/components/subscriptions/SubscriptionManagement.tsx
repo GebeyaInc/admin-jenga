@@ -12,6 +12,14 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { Skeleton } from '@/components/ui/skeleton';
 import { ChevronDown, Filter, MoreHorizontal, Search } from 'lucide-react';
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow
+} from '@/components/ui/table';
 
 // Subscription type based on the Supabase table
 type Subscription = {
@@ -29,6 +37,10 @@ type Subscription = {
 type Tenant = {
   id: string;
   company_name: string;
+  subscription_plan: string;
+  subscription_start_date: string;
+  subscription_end_date: string;
+  is_payment_overdue: boolean;
 };
 
 // Combined type for displaying in the table
@@ -49,39 +61,47 @@ export const SubscriptionManagement: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [statusFilter, setStatusFilter] = useState<string | null>(null);
 
-  // Fetch subscription data from Supabase
-  const { data: subscriptions, isLoading } = useQuery({
-    queryKey: ['subscriptions'],
+  // Fetch subscription and tenant data from Supabase
+  const { data: subscriptionsData, isLoading } = useQuery({
+    queryKey: ['subscriptions-with-tenants'],
     queryFn: async () => {
-      // Fetch subscriptions
+      // Fetch tenants with subscription details
+      const { data: tenantsData, error: tenantsError } = await supabase
+        .from('tenants')
+        .select('id, company_name, subscription_plan, subscription_start_date, subscription_end_date, is_payment_overdue');
+      
+      if (tenantsError) {
+        console.error('Error fetching tenants:', tenantsError);
+        throw new Error(tenantsError.message);
+      }
+
+      // Fetch subscriptions if available
       const { data: subscriptionsData, error: subscriptionsError } = await supabase
         .from('subscriptions')
         .select('*');
       
       if (subscriptionsError) {
-        throw new Error(subscriptionsError.message);
+        console.error('Error fetching subscriptions:', subscriptionsError);
+        // Don't throw here, we'll use tenant data instead
       }
 
-      // Fetch tenants to get company names
-      const { data: tenantsData, error: tenantsError } = await supabase
-        .from('tenants')
-        .select('id, company_name');
-      
-      if (tenantsError) {
-        throw new Error(tenantsError.message);
-      }
+      // Transform tenant data for display
+      const transformedData: SubscriptionWithTenant[] = tenantsData.map((tenant: Tenant) => {
+        // Find matching subscription if it exists
+        const matchingSubscription = subscriptionsData?.find(
+          (sub: Subscription) => sub.tenant_id === tenant.id
+        );
 
-      // Map tenants to a dictionary for quick lookup
-      const tenantMap = tenantsData.reduce((acc, tenant) => {
-        acc[tenant.id] = tenant.company_name;
-        return acc;
-      }, {} as Record<string, string>);
+        // Use subscription data if available, otherwise use tenant data
+        const plan = matchingSubscription?.plan || tenant.subscription_plan;
+        const startDate = new Date(matchingSubscription?.start_date || tenant.subscription_start_date);
+        const endDate = new Date(matchingSubscription?.end_date || tenant.subscription_end_date);
+        
+        // Determine price - use subscription price or default
+        const price = matchingSubscription?.price || 
+          (plan === 'basic' ? 19 : plan === 'premium' ? 49 : plan === 'enterprise' ? 99 : 0);
 
-      // Transform subscription data for display
-      const transformedData: SubscriptionWithTenant[] = subscriptionsData.map((sub: Subscription) => {
         // Determine billing cycle based on start and end date
-        const startDate = new Date(sub.start_date);
-        const endDate = new Date(sub.end_date);
         const diffMonths = (endDate.getFullYear() - startDate.getFullYear()) * 12 + 
                           endDate.getMonth() - startDate.getMonth();
         
@@ -93,28 +113,32 @@ export const SubscriptionManagement: React.FC = () => {
         }
 
         // Format next billing date
-        const nextBillingDate = new Date(sub.end_date);
-        const formattedDate = `${nextBillingDate.toLocaleString('default', { month: 'short' })} ${nextBillingDate.getDate()}, ${nextBillingDate.getFullYear()}`;
+        const formattedDate = `${endDate.toLocaleString('default', { month: 'short' })} ${endDate.getDate()}, ${endDate.getFullYear()}`;
+
+        // Determine status
+        const status = matchingSubscription?.status || 
+          (tenant.is_payment_overdue ? 'failed' : 'active');
 
         return {
-          id: sub.id,
-          tenant_id: sub.tenant_id,
-          tenant_name: tenantMap[sub.tenant_id] || 'Unknown Tenant',
-          plan: `$${sub.price} ${sub.plan.charAt(0).toUpperCase() + sub.plan.slice(1)}`,
-          price: sub.price,
+          id: matchingSubscription?.id || tenant.id,
+          tenant_id: tenant.id,
+          tenant_name: tenant.company_name,
+          plan: `$${price} ${plan.charAt(0).toUpperCase() + plan.slice(1)}`,
+          price: price,
           billing_cycle: billingCycle,
           next_billing: formattedDate,
-          payment_method: sub.payment_method || '-',
-          status: sub.status
+          payment_method: matchingSubscription?.payment_method || 'Credit Card',
+          status: status
         };
       });
 
+      console.log('Transformed subscription data:', transformedData);
       return transformedData;
     }
   });
 
   // Filter subscriptions based on active tab, search query, and status filter
-  const filteredSubscriptions = subscriptions?.filter(sub => {
+  const filteredSubscriptions = subscriptionsData?.filter(sub => {
     // Filter by tab
     if (activeTab === 'failed' && sub.status !== 'failed') return false;
     
@@ -193,31 +217,34 @@ export const SubscriptionManagement: React.FC = () => {
 function renderSubscriptionTable(subscriptions: SubscriptionWithTenant[] | undefined, isLoading: boolean) {
   if (isLoading) {
     return (
-      <div className="bg-white rounded-md border">
-        <div className="grid grid-cols-7 p-4 border-b font-medium">
-          <div>Tenant</div>
-          <div>Status</div>
-          <div>Plan</div>
-          <div>Billing Cycle</div>
-          <div>Next Billing</div>
-          <div>Payment Method</div>
-          <div>Amount</div>
-        </div>
-        {[1, 2, 3, 4, 5].map((i) => (
-          <div key={i} className="grid grid-cols-7 p-4 border-b">
-            <Skeleton className="h-6 w-24" />
-            <Skeleton className="h-6 w-16" />
-            <Skeleton className="h-6 w-20" />
-            <Skeleton className="h-6 w-16" />
-            <Skeleton className="h-6 w-24" />
-            <Skeleton className="h-6 w-16" />
-            <div className="flex justify-between items-center">
-              <Skeleton className="h-6 w-16" />
-              <Skeleton className="h-6 w-6 rounded-full" />
-            </div>
-          </div>
-        ))}
-      </div>
+      <Table>
+        <TableHeader>
+          <TableRow>
+            <TableHead>Tenant</TableHead>
+            <TableHead>Status</TableHead>
+            <TableHead>Plan</TableHead>
+            <TableHead>Billing Cycle</TableHead>
+            <TableHead>Next Billing</TableHead>
+            <TableHead>Payment Method</TableHead>
+            <TableHead>Amount</TableHead>
+            <TableHead></TableHead>
+          </TableRow>
+        </TableHeader>
+        <TableBody>
+          {[1, 2, 3, 4, 5].map((i) => (
+            <TableRow key={i}>
+              <TableCell><Skeleton className="h-6 w-24" /></TableCell>
+              <TableCell><Skeleton className="h-6 w-16" /></TableCell>
+              <TableCell><Skeleton className="h-6 w-20" /></TableCell>
+              <TableCell><Skeleton className="h-6 w-16" /></TableCell>
+              <TableCell><Skeleton className="h-6 w-24" /></TableCell>
+              <TableCell><Skeleton className="h-6 w-16" /></TableCell>
+              <TableCell><Skeleton className="h-6 w-16" /></TableCell>
+              <TableCell><Skeleton className="h-6 w-6 rounded-full" /></TableCell>
+            </TableRow>
+          ))}
+        </TableBody>
+      </Table>
     );
   }
 
@@ -230,52 +257,53 @@ function renderSubscriptionTable(subscriptions: SubscriptionWithTenant[] | undef
   }
 
   return (
-    <div className="bg-white rounded-md border">
-      <div className="grid grid-cols-7 p-4 border-b font-medium">
-        <div>Tenant</div>
-        <div>Status</div>
-        <div>Plan</div>
-        <div>Billing Cycle</div>
-        <div>Next Billing</div>
-        <div>Payment Method</div>
-        <div className="flex justify-between items-center">
-          <div>Amount</div>
-          <div>Actions</div>
-        </div>
-      </div>
-      
-      {subscriptions.map((sub) => (
-        <div key={sub.id} className="grid grid-cols-7 p-4 border-b hover:bg-muted/20">
-          <div>{sub.tenant_name}</div>
-          <div>
-            <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${
-              sub.status === 'active' ? 'bg-green-100 text-green-800' :
-              sub.status === 'trial' ? 'bg-blue-100 text-blue-800' :
-              sub.status === 'failed' ? 'bg-red-100 text-red-800' :
-              'bg-gray-100 text-gray-800'
-            }`}>
-              {sub.status.charAt(0).toUpperCase() + sub.status.slice(1)}
-            </span>
-          </div>
-          <div>{sub.plan}</div>
-          <div>{sub.billing_cycle}</div>
-          <div>{sub.next_billing}</div>
-          <div>{sub.payment_method}</div>
-          <div className="flex justify-between items-center">
-            <div>${sub.price.toFixed(2)}</div>
-            <DropdownMenu>
-              <DropdownMenuTrigger>
-                <MoreHorizontal className="h-5 w-5 text-muted-foreground" />
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end">
-                <DropdownMenuItem>View Details</DropdownMenuItem>
-                <DropdownMenuItem>Edit Subscription</DropdownMenuItem>
-                <DropdownMenuItem className="text-red-600">Cancel Subscription</DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
-          </div>
-        </div>
-      ))}
-    </div>
+    <Table>
+      <TableHeader>
+        <TableRow>
+          <TableHead>Tenant</TableHead>
+          <TableHead>Status</TableHead>
+          <TableHead>Plan</TableHead>
+          <TableHead>Billing Cycle</TableHead>
+          <TableHead>Next Billing</TableHead>
+          <TableHead>Payment Method</TableHead>
+          <TableHead>Amount</TableHead>
+          <TableHead></TableHead>
+        </TableRow>
+      </TableHeader>
+      <TableBody>
+        {subscriptions.map((sub) => (
+          <TableRow key={sub.id} className="hover:bg-muted/20">
+            <TableCell>{sub.tenant_name}</TableCell>
+            <TableCell>
+              <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${
+                sub.status === 'active' ? 'bg-green-100 text-green-800' :
+                sub.status === 'trial' ? 'bg-blue-100 text-blue-800' :
+                sub.status === 'failed' ? 'bg-red-100 text-red-800' :
+                'bg-gray-100 text-gray-800'
+              }`}>
+                {sub.status.charAt(0).toUpperCase() + sub.status.slice(1)}
+              </span>
+            </TableCell>
+            <TableCell>{sub.plan}</TableCell>
+            <TableCell>{sub.billing_cycle}</TableCell>
+            <TableCell>{sub.next_billing}</TableCell>
+            <TableCell>{sub.payment_method}</TableCell>
+            <TableCell>${sub.price.toFixed(2)}</TableCell>
+            <TableCell>
+              <DropdownMenu>
+                <DropdownMenuTrigger>
+                  <MoreHorizontal className="h-5 w-5 text-muted-foreground" />
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end">
+                  <DropdownMenuItem>View Details</DropdownMenuItem>
+                  <DropdownMenuItem>Edit Subscription</DropdownMenuItem>
+                  <DropdownMenuItem className="text-red-600">Cancel Subscription</DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            </TableCell>
+          </TableRow>
+        ))}
+      </TableBody>
+    </Table>
   );
 }
