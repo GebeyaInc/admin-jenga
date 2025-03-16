@@ -1,4 +1,3 @@
-
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -7,24 +6,26 @@
   :root {
     /* Base Colors */
     --background: 210 40% 98%;
-    --foreground: 222 47% 11%;
+    --foreground: 264 20% 15%;
     
     /* Card & UI Elements */
     --card: 0 0% 100%;
-    --card-foreground: 222 47% 11%;
+    --card-foreground: 264 20% 15%;
     
     --popover: 0 0% 100%;
-    --popover-foreground: 222 47% 11%;
+    --popover-foreground: 264 20% 15%;
     
-    /* Interactive Elements */
-    --primary: 210 100% 50%;
+    /* Interactive Elements - Gebeya Magenta */
+    --primary: 326 89% 61%;
     --primary-foreground: 210 40% 98%;
     
-    --secondary: 210 40% 96%;
-    --secondary-foreground: 222 47% 11%;
+    /* Secondary - Orange */
+    --secondary: 24 94% 53%;
+    --secondary-foreground: 210 40% 98%;
     
-    --accent: 210 40% 96%;
-    --accent-foreground: 222 47% 11%;
+    /* Accent - Softer Orange */
+    --accent: 30 96% 67%;
+    --accent-foreground: 264 20% 15%;
     
     /* System Colors */
     --muted: 210 40% 96%;
@@ -36,20 +37,20 @@
     /* Border & Input */
     --border: 214 32% 91%;
     --input: 214 32% 91%;
-    --ring: 215 20% 65%;
+    --ring: 326 89% 61%;
     
     /* Radius */
     --radius: 0.75rem;
     
-    /* Sidebar */
-    --sidebar-background: 0 0% 100%;
-    --sidebar-foreground: 222 47% 11%;
-    --sidebar-primary: 210 100% 50%;
+    /* Sidebar - Dark Purple */
+    --sidebar-background: 264 20% 15%;
+    --sidebar-foreground: 0 0% 100%;
+    --sidebar-primary: 326 89% 61%;
     --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 210 40% 96%;
-    --sidebar-accent-foreground: 222 47% 11%;
-    --sidebar-border: 214 32% 91%;
-    --sidebar-ring: 221 83% 53%;
+    --sidebar-accent: 30 96% 67%;
+    --sidebar-accent-foreground: 264 20% 15%;
+    --sidebar-border: 264 15% 25%;
+    --sidebar-ring: 326 89% 61%;
   }
 }
 

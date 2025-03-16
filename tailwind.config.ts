@@ -1,4 +1,3 @@
-
 import type { Config } from "tailwindcss";
 
 export default {
@@ -62,6 +61,13 @@ export default {
 					'accent-foreground': 'hsl(var(--sidebar-accent-foreground))',
 					border: 'hsl(var(--sidebar-border))',
 					ring: 'hsl(var(--sidebar-ring))'
+				},
+				gebeya: {
+					pink: '#D946EF',
+					orange: '#F97316',
+					'dark-purple': '#1A1F2C',
+					'charcoal-gray': '#403E43',
+					'dark-charcoal': '#221F26'
 				}
 			},
 			borderRadius: {
@@ -132,6 +138,10 @@ export default {
 			},
 			backdropBlur: {
 				'xs': '2px'
+			},
+			backgroundImage: {
+				'gebeya-gradient': 'linear-gradient(90deg, #D946EF 0%, #F97316 100%)',
+				'gebeya-gradient-vertical': 'linear-gradient(180deg, #D946EF 0%, #F97316 100%)'
 			}
 		}
 	},
