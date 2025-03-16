@@ -10,7 +10,10 @@ import {
   TrendingDown,
   Store,
   Activity,
-  Filter
+  Filter,
+  AlertTriangle,
+  CheckCircle,
+  XCircle
 } from 'lucide-react';
 import { MetricCard } from './MetricCard';
 import { Chart } from './Chart';
@@ -23,43 +26,29 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger 
 } from '@/components/ui/dropdown-menu';
-
-const revenueData = [
-  { name: 'Jan', revenue: 4000, projected: 2400 },
-  { name: 'Feb', revenue: 3000, projected: 1398 },
-  { name: 'Mar', revenue: 2000, projected: 9800 },
-  { name: 'Apr', revenue: 2780, projected: 3908 },
-  { name: 'May', revenue: 1890, projected: 4800 },
-  { name: 'Jun', revenue: 2390, projected: 3800 },
-  { name: 'Jul', revenue: 3490, projected: 4300 },
-];
-
-const tenantData = [
-  { name: 'Jan', active: 20, newSignups: 5 },
-  { name: 'Feb', active: 25, newSignups: 8 },
-  { name: 'Mar', active: 30, newSignups: 12 },
-  { name: 'Apr', active: 40, newSignups: 15 },
-  { name: 'May', active: 45, newSignups: 10 },
-  { name: 'Jun', active: 50, newSignups: 12 },
-  { name: 'Jul', active: 55, newSignups: 8 },
-];
-
-const subscriptionData = [
-  { name: 'Free Trial', value: 25 },
-  { name: '$50 Plan', value: 40 },
-  { name: '$80 Plan', value: 25 },
-  { name: '$100 Plan', value: 10 },
-];
-
-const marketplaceData = [
-  { name: 'Health & Wellness', value: 30 },
-  { name: 'Technology', value: 25 },
-  { name: 'Education', value: 20 },
-  { name: 'Professional Services', value: 15 },
-  { name: 'E-commerce', value: 10 },
-];
+import { useQuery } from '@tanstack/react-query';
+import { fetchDashboardAnalytics } from '@/services/dashboardService';
+import { Skeleton } from '@/components/ui/skeleton';
 
 export const DashboardOverview: React.FC = () => {
+  const { data: dashboardData, isLoading, error } = useQuery({
+    queryKey: ['dashboardAnalytics'],
+    queryFn: fetchDashboardAnalytics,
+    staleTime: 5 * 60 * 1000, // 5 minutes
+    refetchInterval: 5 * 60 * 1000, // Refetch every 5 minutes
+  });
+
+  if (error) {
+    console.error("Error fetching dashboard data:", error);
+  }
+
+  // Determine which data to show - real data or fallbacks
+  const revenueData = dashboardData?.revenueData?.length ? dashboardData.revenueData : [];
+  const tenantData = dashboardData?.tenantData?.length ? dashboardData.tenantData : [];
+  const subscriptionData = dashboardData?.subscriptionData?.length ? dashboardData.subscriptionData : [];
+  const marketplaceData = dashboardData?.marketplaceData?.length ? dashboardData.marketplaceData : [];
+  const notifications = dashboardData?.notifications || [];
+
   return (
     <div className="space-y-6">
       <div className="flex flex-col sm:flex-row justify-between items-start mb-6">
@@ -91,103 +80,159 @@ export const DashboardOverview: React.FC = () => {
       </div>
       
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        <MetricCard 
-          title="Total Tenants" 
-          value="125" 
-          description="Active and trial accounts" 
-          icon={<Building className="h-4 w-4" />}
-          trend={{ value: 12, positive: true }}
-        />
-        <MetricCard 
-          title="Total Marketplaces" 
-          value="96" 
-          description="Across all tenants" 
-          icon={<Store className="h-4 w-4" />}
-          trend={{ value: 8, positive: true }}
-        />
-        <MetricCard 
-          title="Monthly Revenue" 
-          value="$24,500" 
-          description="All subscription tiers" 
-          icon={<DollarSign className="h-4 w-4" />}
-          trend={{ value: 23, positive: true }}
-        />
-        <MetricCard 
-          title="Churn Rate" 
-          value="2.4%" 
-          description="Last 30 days" 
-          icon={<TrendingDown className="h-4 w-4" />}
-          trend={{ value: 0.5, positive: false }}
-        />
+        {isLoading ? (
+          <>
+            {[1, 2, 3, 4].map((i) => (
+              <MetricCard 
+                key={i}
+                title={<Skeleton className="h-4 w-24" />}
+                value={<Skeleton className="h-8 w-16" />}
+                description={<Skeleton className="h-3 w-32" />}
+              />
+            ))}
+          </>
+        ) : (
+          <>
+            <MetricCard 
+              title="Total Tenants" 
+              value={dashboardData?.totalTenants.toString() || "0"} 
+              description="Active and trial accounts" 
+              icon={<Building className="h-4 w-4" />}
+              trend={{ value: 12, positive: true }}
+            />
+            <MetricCard 
+              title="Total Marketplaces" 
+              value={dashboardData?.totalMarketplaces.toString() || "0"} 
+              description="Across all tenants" 
+              icon={<Store className="h-4 w-4" />}
+              trend={{ value: 8, positive: true }}
+            />
+            <MetricCard 
+              title="Monthly Revenue" 
+              value={`$${(dashboardData?.monthlyRevenue || 0).toLocaleString()}`} 
+              description="All subscription tiers" 
+              icon={<DollarSign className="h-4 w-4" />}
+              trend={{ value: 23, positive: true }}
+            />
+            <MetricCard 
+              title="Churn Rate" 
+              value={`${dashboardData?.churnRate || 0}%`} 
+              description="Last 30 days" 
+              icon={<TrendingDown className="h-4 w-4" />}
+              trend={{ value: 0.5, positive: false }}
+            />
+          </>
+        )}
       </div>
       
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <Chart 
-          title="Revenue Growth" 
-          description="Monthly revenue vs projections"
-          data={revenueData}
-          type="area"
-          yKeys={['revenue', 'projected']}
-          height={300}
-        />
-        <Chart 
-          title="Tenant Growth" 
-          description="Active tenants and new signups"
-          data={tenantData}
-          type="line"
-          yKeys={['active', 'newSignups']}
-          height={300}
-        />
+        {isLoading ? (
+          <>
+            <div className="bg-card border rounded-lg p-6">
+              <Skeleton className="h-5 w-40 mb-2" />
+              <Skeleton className="h-3 w-56 mb-4" />
+              <Skeleton className="h-[250px] w-full rounded-md" />
+            </div>
+            <div className="bg-card border rounded-lg p-6">
+              <Skeleton className="h-5 w-40 mb-2" />
+              <Skeleton className="h-3 w-56 mb-4" />
+              <Skeleton className="h-[250px] w-full rounded-md" />
+            </div>
+          </>
+        ) : (
+          <>
+            <Chart 
+              title="Revenue Growth" 
+              description="Monthly revenue vs projections"
+              data={revenueData}
+              type="area"
+              yKeys={['revenue', 'projected']}
+              height={300}
+            />
+            <Chart 
+              title="Tenant Growth" 
+              description="Active tenants and new signups"
+              data={tenantData}
+              type="line"
+              yKeys={['active', 'newSignups']}
+              height={300}
+            />
+          </>
+        )}
       </div>
       
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <Chart 
-          title="Subscription Distribution" 
-          description="Breakdown by pricing tier"
-          data={subscriptionData}
-          type="pie"
-          height={300}
-        />
-        <Chart 
-          title="Top Industries" 
-          description="Marketplace category distribution"
-          data={marketplaceData}
-          type="bar"
-          yKeys={['value']}
-          height={300}
-        />
+        {isLoading ? (
+          <>
+            <div className="bg-card border rounded-lg p-6">
+              <Skeleton className="h-5 w-40 mb-2" />
+              <Skeleton className="h-3 w-56 mb-4" />
+              <Skeleton className="h-[250px] w-full rounded-md" />
+            </div>
+            <div className="bg-card border rounded-lg p-6">
+              <Skeleton className="h-5 w-40 mb-2" />
+              <Skeleton className="h-3 w-56 mb-4" />
+              <Skeleton className="h-[250px] w-full rounded-md" />
+            </div>
+          </>
+        ) : (
+          <>
+            <Chart 
+              title="Subscription Distribution" 
+              description="Breakdown by pricing tier"
+              data={subscriptionData}
+              type="pie"
+              height={300}
+            />
+            <Chart 
+              title="Top Industries" 
+              description="Marketplace category distribution"
+              data={marketplaceData}
+              type="bar"
+              yKeys={['value']}
+              height={300}
+            />
+          </>
+        )}
       </div>
       
       <div className="grid grid-cols-1 gap-6">
-        <div className="bg-primary/5 rounded-lg p-4 border border-primary/10">
-          <div className="flex items-center">
-            <Activity className="h-5 w-5 text-primary mr-2" />
-            <h3 className="text-lg font-medium">Real-Time Notifications</h3>
-          </div>
-          <div className="mt-3 space-y-2">
-            <div className="bg-card p-3 rounded-md flex items-center justify-between">
-              <div className="flex items-center">
-                <div className="h-2 w-2 rounded-full bg-green-500 mr-2"></div>
-                <p className="text-sm">New tenant signup: <span className="font-medium">TechCorp Inc.</span></p>
-              </div>
-              <span className="text-xs text-muted-foreground">2 mins ago</span>
+        {isLoading ? (
+          <div className="bg-primary/5 rounded-lg p-4 border border-primary/10">
+            <div className="flex items-center">
+              <Activity className="h-5 w-5 text-primary mr-2" />
+              <h3 className="text-lg font-medium">Real-Time Notifications</h3>
             </div>
-            <div className="bg-card p-3 rounded-md flex items-center justify-between">
-              <div className="flex items-center">
-                <div className="h-2 w-2 rounded-full bg-yellow-500 mr-2"></div>
-                <p className="text-sm">Subscription payment pending: <span className="font-medium">Health Plus LLC</span></p>
-              </div>
-              <span className="text-xs text-muted-foreground">15 mins ago</span>
-            </div>
-            <div className="bg-card p-3 rounded-md flex items-center justify-between">
-              <div className="flex items-center">
-                <div className="h-2 w-2 rounded-full bg-red-500 mr-2"></div>
-                <p className="text-sm">Failed payment for: <span className="font-medium">Global Services Co.</span></p>
-              </div>
-              <span className="text-xs text-muted-foreground">47 mins ago</span>
+            <div className="mt-3 space-y-2">
+              {[1, 2, 3].map((i) => (
+                <div key={i} className="bg-card p-3 rounded-md">
+                  <Skeleton className="h-4 w-full" />
+                </div>
+              ))}
             </div>
           </div>
-        </div>
+        ) : (
+          <div className="bg-primary/5 rounded-lg p-4 border border-primary/10">
+            <div className="flex items-center">
+              <Activity className="h-5 w-5 text-primary mr-2" />
+              <h3 className="text-lg font-medium">Real-Time Notifications</h3>
+            </div>
+            <div className="mt-3 space-y-2">
+              {notifications.map((notification, index) => (
+                <div key={index} className="bg-card p-3 rounded-md flex items-center justify-between">
+                  <div className="flex items-center">
+                    <div className={`h-2 w-2 rounded-full mr-2 ${
+                      notification.type === 'success' ? 'bg-green-500' :
+                      notification.type === 'warning' ? 'bg-yellow-500' : 'bg-red-500'
+                    }`}></div>
+                    <p className="text-sm">{notification.message}: <span className="font-medium">{notification.details}</span></p>
+                  </div>
+                  <span className="text-xs text-muted-foreground">{notification.time}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );

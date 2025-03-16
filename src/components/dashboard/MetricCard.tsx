@@ -10,9 +10,9 @@ import {
 import { cn } from '@/lib/utils';
 
 interface MetricCardProps {
-  title: string;
-  value: string | number;
-  description?: string;
+  title: React.ReactNode;
+  value: React.ReactNode;
+  description?: React.ReactNode;
   icon?: React.ReactNode;
   trend?: {
     value: number;
