@@ -1,4 +1,3 @@
-
 import React from 'react';
 import {
   Area,
@@ -6,6 +5,7 @@ import {
   Bar,
   BarChart,
   CartesianGrid,
+  Cell,
   Legend,
   Line,
   LineChart,
