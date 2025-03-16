@@ -119,11 +119,14 @@ export const SubscriptionManagement: React.FC = () => {
         const status = matchingSubscription?.status || 
           (tenant.is_payment_overdue ? 'failed' : 'active');
 
+        // Format plan name - capitalize first letter without showing price
+        const planName = plan.charAt(0).toUpperCase() + plan.slice(1);
+
         return {
           id: matchingSubscription?.id || tenant.id,
           tenant_id: tenant.id,
           tenant_name: tenant.company_name,
-          plan: `$${price} ${plan.charAt(0).toUpperCase() + plan.slice(1)}`,
+          plan: planName, // Just the plan name without price
           price: price,
           billing_cycle: billingCycle,
           next_billing: formattedDate,
@@ -271,7 +274,7 @@ function renderSubscriptionTable(subscriptions: SubscriptionWithTenant[] | undef
         </TableRow>
       </TableHeader>
       <TableBody>
-        {subscriptions.map((sub) => (
+        {subscriptions?.map((sub) => (
           <TableRow key={sub.id} className="hover:bg-muted/20">
             <TableCell>{sub.tenant_name}</TableCell>
             <TableCell>
