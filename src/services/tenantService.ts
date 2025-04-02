@@ -1,4 +1,3 @@
-
 import { supabase } from "@/integrations/supabase/client";
 
 export interface TenantAnalytics {
@@ -29,6 +28,7 @@ export interface Tenant {
   providers: number;
   marketplaces: number;
   activeSince: string;
+  createdAt: Date;
 }
 
 export async function fetchTenantAnalytics(): Promise<TenantAnalytics> {
@@ -129,7 +129,6 @@ export async function fetchTenantAnalytics(): Promise<TenantAnalytics> {
   }
 }
 
-// New function to fetch actual tenant data
 export async function fetchTenants(): Promise<Tenant[]> {
   console.log("Fetching tenants from Supabase");
   
@@ -145,7 +144,8 @@ export async function fetchTenants(): Promise<Tenant[]> {
         subscription_plan,
         created_at,
         template_id
-      `);
+      `)
+      .order('created_at', { ascending: false });
     
     if (error) {
       console.error("Error fetching tenants:", error);
@@ -180,7 +180,8 @@ export async function fetchTenants(): Promise<Tenant[]> {
         users: Math.floor(Math.random() * 200) + 50, // Placeholder for now
         providers: Math.floor(Math.random() * 40) + 10, // Placeholder for now
         marketplaces: tenant.template_id ? 1 : 0,
-        activeSince: formattedDate
+        activeSince: formattedDate,
+        createdAt: createdAt
       };
     });
   } catch (error) {
@@ -189,9 +190,7 @@ export async function fetchTenants(): Promise<Tenant[]> {
   }
 }
 
-// Helper function to format industry names
 function formatIndustryName(industry: string): string {
-  // Convert kebab-case to Title Case
   return industry
     .split('-')
     .map(word => word.charAt(0).toUpperCase() + word.slice(1))

@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { 
   Table, 
@@ -68,7 +67,6 @@ export const TenantInsights: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
   
-  // Fetch tenant analytics data
   const { data: analyticsData, isLoading: isAnalyticsLoading } = useQuery({
     queryKey: ['tenantAnalytics'],
     queryFn: fetchTenantAnalytics,
@@ -76,7 +74,6 @@ export const TenantInsights: React.FC = () => {
     refetchInterval: 5 * 60 * 1000, // Refetch every 5 minutes
   });
   
-  // Fetch tenant data
   const { data: tenants = [], isLoading: isTenantsLoading } = useQuery({
     queryKey: ['tenants'],
     queryFn: fetchTenants,
@@ -113,7 +110,7 @@ export const TenantInsights: React.FC = () => {
       <div className="flex justify-between items-center mb-6">
         <div>
           <h1 className="text-2xl sm:text-3xl font-bold tracking-tight">Summary</h1>
-          <p className="text-muted-foreground mt-1">Tenant engagement and marketplace insights</p>
+          <p className="text-muted-foreground mt-1">Tenant engagement and marketplace insights (Latest First)</p>
         </div>
       </div>
       
@@ -264,7 +261,6 @@ export const TenantInsights: React.FC = () => {
           </TableHeader>
           <TableBody>
             {isTenantsLoading ? (
-              // Loading state - show skeleton rows
               Array(5).fill(0).map((_, index) => (
                 <TableRow key={`skeleton-${index}`}>
                   <TableCell>
@@ -284,7 +280,6 @@ export const TenantInsights: React.FC = () => {
                 </TableRow>
               ))
             ) : filteredTenants.length > 0 ? (
-              // Show actual tenant data
               filteredTenants.map((tenant) => (
                 <TableRow key={tenant.id}>
                   <TableCell>
@@ -316,7 +311,6 @@ export const TenantInsights: React.FC = () => {
                 </TableRow>
               ))
             ) : (
-              // No results found
               <TableRow>
                 <TableCell colSpan={7} className="text-center py-8 text-muted-foreground">
                   No tenants found matching your search criteria.
