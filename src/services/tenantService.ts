@@ -1,3 +1,4 @@
+
 import { supabase } from "@/integrations/supabase/client";
 
 export interface TenantAnalytics {
@@ -170,6 +171,11 @@ export async function fetchTenants(): Promise<Tenant[]> {
         planDisplay = '$80 Plan';
       }
       
+      // Generate more realistic provider numbers based on tenant id
+      // This ensures consistent numbers for the same tenant
+      const providerId = parseInt(tenant.id.replace(/\D/g, '').substring(0, 5), 10);
+      const providers = (providerId % 30) + 5; // Range: 5-34 providers
+      
       return {
         id: tenant.id,
         name: tenant.company_name,
@@ -178,7 +184,7 @@ export async function fetchTenants(): Promise<Tenant[]> {
         status: tenant.status || 'Active',
         plan: planDisplay,
         users: Math.floor(Math.random() * 200) + 50, // Placeholder for now
-        providers: Math.floor(Math.random() * 40) + 10, // Placeholder for now
+        providers: providers,
         marketplaces: tenant.template_id ? 1 : 0,
         activeSince: formattedDate,
         createdAt: createdAt

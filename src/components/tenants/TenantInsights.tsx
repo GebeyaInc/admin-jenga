@@ -25,7 +25,8 @@ import {
   Globe,
   MapPin,
   Users,
-  ShoppingBag
+  ShoppingBag,
+  ChevronDown
 } from 'lucide-react';
 import {
   DropdownMenu,
@@ -66,6 +67,7 @@ const engagementData = [
 export const TenantInsights: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
+  const [displayLimit, setDisplayLimit] = useState(10);
   
   const { data: analyticsData, isLoading: isAnalyticsLoading } = useQuery({
     queryKey: ['tenantAnalytics'],
@@ -88,6 +90,12 @@ export const TenantInsights: React.FC = () => {
     
     return matchesSearch && matchesStatus;
   });
+  
+  const displayedTenants = filteredTenants.slice(0, displayLimit);
+  
+  const handleViewMore = () => {
+    setDisplayLimit(prev => prev + 10);
+  };
   
   const getStatusBadge = (status: string) => {
     switch (status.toLowerCase()) {
@@ -277,8 +285,8 @@ export const TenantInsights: React.FC = () => {
                   </TableCell>
                 </TableRow>
               ))
-            ) : filteredTenants.length > 0 ? (
-              filteredTenants.map((tenant) => (
+            ) : displayedTenants.length > 0 ? (
+              displayedTenants.map((tenant) => (
                 <TableRow key={tenant.id}>
                   <TableCell>
                     <div>
@@ -316,6 +324,18 @@ export const TenantInsights: React.FC = () => {
             )}
           </TableBody>
         </Table>
+        
+        {filteredTenants.length > displayLimit && (
+          <div className="flex justify-center py-4 border-t">
+            <Button 
+              variant="outline" 
+              onClick={handleViewMore}
+              className="flex items-center gap-2"
+            >
+              View More <ChevronDown className="h-4 w-4" />
+            </Button>
+          </div>
+        )}
       </div>
     </>
   );
