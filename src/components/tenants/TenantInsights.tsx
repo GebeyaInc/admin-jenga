@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { 
   Table, 
@@ -45,14 +46,6 @@ import {
 import { useQuery } from '@tanstack/react-query';
 import { fetchTenantAnalytics, fetchTenants } from '@/services/tenantService';
 import { Skeleton } from '@/components/ui/skeleton';
-
-const locationData = [
-  { name: 'United States', value: 45 },
-  { name: 'Europe', value: 25 },
-  { name: 'Asia', value: 15 },
-  { name: 'Canada', value: 10 },
-  { name: 'Australia', value: 5 }
-];
 
 const engagementData = [
   { name: 'Jan', users: 1200, providers: 200 },
@@ -210,10 +203,13 @@ export const TenantInsights: React.FC = () => {
         <Chart 
           title="Geographic Distribution" 
           description="Tenant locations worldwide"
-          data={locationData}
+          data={analyticsData?.locationDistribution && analyticsData.locationDistribution.length > 0
+            ? analyticsData.locationDistribution
+            : [{ name: 'No Data', value: 100 }]}
           type="bar"
           yKeys={['value']}
           height={300}
+          colors={['#4F46E5', '#10B981', '#F59E0B', '#EF4444', '#8B5CF6']}
         />
       </div>
       

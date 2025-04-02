@@ -1,4 +1,3 @@
-
 import { supabase } from "@/integrations/supabase/client";
 
 export interface TenantAnalytics {
@@ -13,6 +12,10 @@ export interface TenantAnalytics {
     percentage: number;
   };
   industryDistribution: {
+    name: string;
+    value: number;
+  }[];
+  locationDistribution: {
     name: string;
     value: number;
   }[];
@@ -86,6 +89,12 @@ export async function fetchTenantAnalytics(): Promise<TenantAnalytics> {
       }
     });
     
+    // Create location distribution array for chart
+    const locationDistribution = Object.entries(locationCount).map(([location, count]) => ({
+      name: location,
+      value: count
+    })).sort((a, b) => b.value - a.value);
+    
     // Get top location
     let topLocation = { name: "N/A", count: 0, percentage: 0 };
     Object.entries(locationCount).forEach(([location, count]) => {
@@ -109,7 +118,8 @@ export async function fetchTenantAnalytics(): Promise<TenantAnalytics> {
         name: topLocation.name,
         percentage: topLocation.percentage
       },
-      industryDistribution: industryDistribution.slice(0, 5) // Return top 5 industries
+      industryDistribution: industryDistribution.slice(0, 5), // Return top 5 industries
+      locationDistribution: locationDistribution.slice(0, 5)  // Return top 5 locations
     };
   } catch (error) {
     console.error("Error in fetchTenantAnalytics:", error);
@@ -125,7 +135,8 @@ export async function fetchTenantAnalytics(): Promise<TenantAnalytics> {
         name: "N/A",
         percentage: 0
       },
-      industryDistribution: []
+      industryDistribution: [],
+      locationDistribution: []
     };
   }
 }
