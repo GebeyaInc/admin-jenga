@@ -18,6 +18,19 @@ export interface TenantAnalytics {
   }[];
 }
 
+export interface Tenant {
+  id: string;
+  name: string;
+  industry: string;
+  location: string;
+  status: string;
+  plan: string;
+  users: number;
+  providers: number;
+  marketplaces: number;
+  activeSince: string;
+}
+
 export async function fetchTenantAnalytics(): Promise<TenantAnalytics> {
   console.log("Fetching tenant analytics from Supabase");
   
@@ -113,6 +126,66 @@ export async function fetchTenantAnalytics(): Promise<TenantAnalytics> {
       },
       industryDistribution: []
     };
+  }
+}
+
+// New function to fetch actual tenant data
+export async function fetchTenants(): Promise<Tenant[]> {
+  console.log("Fetching tenants from Supabase");
+  
+  try {
+    const { data: tenants, error } = await supabase
+      .from('tenants')
+      .select(`
+        id,
+        company_name,
+        industry,
+        location,
+        status,
+        subscription_plan,
+        created_at,
+        template_id
+      `);
+    
+    if (error) {
+      console.error("Error fetching tenants:", error);
+      throw error;
+    }
+    
+    // Format the tenant data
+    return tenants.map(tenant => {
+      // Format the date to a readable string
+      const createdAt = new Date(tenant.created_at);
+      const formattedDate = `${createdAt.toLocaleString('default', { month: 'short' })} ${createdAt.getDate()}, ${createdAt.getFullYear()}`;
+      
+      // Format plan price based on subscription_plan
+      let planDisplay = tenant.subscription_plan;
+      if (tenant.subscription_plan === 'trial') {
+        planDisplay = 'Free Trial';
+      } else if (tenant.subscription_plan === 'basic') {
+        planDisplay = '$50 Plan';
+      } else if (tenant.subscription_plan === 'premium') {
+        planDisplay = '$100 Plan';
+      } else if (tenant.subscription_plan === 'professional') {
+        planDisplay = '$80 Plan';
+      }
+      
+      return {
+        id: tenant.id,
+        name: tenant.company_name,
+        industry: formatIndustryName(tenant.industry || 'unknown'),
+        location: tenant.location || 'Unknown',
+        status: tenant.status || 'Active',
+        plan: planDisplay,
+        users: Math.floor(Math.random() * 200) + 50, // Placeholder for now
+        providers: Math.floor(Math.random() * 40) + 10, // Placeholder for now
+        marketplaces: tenant.template_id ? 1 : 0,
+        activeSince: formattedDate
+      };
+    });
+  } catch (error) {
+    console.error("Error in fetchTenants:", error);
+    return [];
   }
 }
 

@@ -43,79 +43,8 @@ import {
   SelectValue 
 } from '@/components/ui/select';
 import { useQuery } from '@tanstack/react-query';
-import { fetchTenantAnalytics } from '@/services/tenantService';
+import { fetchTenantAnalytics, fetchTenants } from '@/services/tenantService';
 import { Skeleton } from '@/components/ui/skeleton';
-
-const tenants = [
-  {
-    id: 1,
-    name: 'TechCorp Inc.',
-    industry: 'Technology',
-    location: 'New York, USA',
-    status: 'Active',
-    plan: '$100 Plan',
-    users: 250,
-    providers: 45,
-    marketplaces: 3,
-    activeSince: 'Jan 12, 2023'
-  },
-  {
-    id: 2,
-    name: 'Health Plus LLC',
-    industry: 'Healthcare',
-    location: 'Boston, USA',
-    status: 'Active',
-    plan: '$80 Plan',
-    users: 180,
-    providers: 32,
-    marketplaces: 2,
-    activeSince: 'Mar 5, 2023'
-  },
-  {
-    id: 3,
-    name: 'Global Services Co.',
-    industry: 'Professional Services',
-    location: 'London, UK',
-    status: 'Trial',
-    plan: 'Free Trial',
-    users: 75,
-    providers: 12,
-    marketplaces: 1,
-    activeSince: 'Jun 18, 2023'
-  },
-  {
-    id: 4,
-    name: 'EduTech Solutions',
-    industry: 'Education',
-    location: 'Toronto, Canada',
-    status: 'Active',
-    plan: '$50 Plan',
-    users: 120,
-    providers: 22,
-    marketplaces: 1,
-    activeSince: 'Apr 30, 2023'
-  },
-  {
-    id: 5,
-    name: 'Fashion Forward',
-    industry: 'Retail',
-    location: 'Paris, France',
-    status: 'Expired',
-    plan: '$80 Plan',
-    users: 95,
-    providers: 18,
-    marketplaces: 1,
-    activeSince: 'Feb 8, 2023'
-  }
-];
-
-const industryData = [
-  { name: 'Technology', value: 35 },
-  { name: 'Healthcare', value: 25 },
-  { name: 'Education', value: 20 },
-  { name: 'Professional Services', value: 15 },
-  { name: 'Retail', value: 5 }
-];
 
 const locationData = [
   { name: 'United States', value: 45 },
@@ -140,9 +69,17 @@ export const TenantInsights: React.FC = () => {
   const [statusFilter, setStatusFilter] = useState('all');
   
   // Fetch tenant analytics data
-  const { data: analyticsData, isLoading } = useQuery({
+  const { data: analyticsData, isLoading: isAnalyticsLoading } = useQuery({
     queryKey: ['tenantAnalytics'],
     queryFn: fetchTenantAnalytics,
+    staleTime: 5 * 60 * 1000, // 5 minutes
+    refetchInterval: 5 * 60 * 1000, // Refetch every 5 minutes
+  });
+  
+  // Fetch tenant data
+  const { data: tenants = [], isLoading: isTenantsLoading } = useQuery({
+    queryKey: ['tenants'],
+    queryFn: fetchTenants,
     staleTime: 5 * 60 * 1000, // 5 minutes
     refetchInterval: 5 * 60 * 1000, // Refetch every 5 minutes
   });
@@ -156,13 +93,16 @@ export const TenantInsights: React.FC = () => {
   });
   
   const getStatusBadge = (status: string) => {
-    switch (status) {
-      case 'Active':
+    switch (status.toLowerCase()) {
+      case 'active':
         return <Badge className="bg-green-500/20 text-green-700 hover:bg-green-500/30 border-green-500/30">{status}</Badge>;
-      case 'Trial':
+      case 'trial':
         return <Badge className="bg-blue-500/20 text-blue-700 hover:bg-blue-500/30 border-blue-500/30">{status}</Badge>;
-      case 'Expired':
+      case 'expired':
+      case 'inactive':
         return <Badge className="bg-red-500/20 text-red-700 hover:bg-red-500/30 border-red-500/30">{status}</Badge>;
+      case 'onboarding':
+        return <Badge className="bg-orange-500/20 text-orange-700 hover:bg-orange-500/30 border-orange-500/30">{status}</Badge>;
       default:
         return <Badge variant="outline">{status}</Badge>;
     }
@@ -184,7 +124,7 @@ export const TenantInsights: React.FC = () => {
             <Users className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            {isLoading ? (
+            {isAnalyticsLoading ? (
               <Skeleton className="h-8 w-16" />
             ) : (
               <div className="text-2xl font-bold">{analyticsData?.totalTenants || 0}</div>
@@ -200,7 +140,7 @@ export const TenantInsights: React.FC = () => {
             <ShoppingBag className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            {isLoading ? (
+            {isAnalyticsLoading ? (
               <Skeleton className="h-8 w-16" />
             ) : (
               <div className="text-2xl font-bold">{analyticsData?.activeMarketplaces || 0}</div>
@@ -216,13 +156,13 @@ export const TenantInsights: React.FC = () => {
             <Globe className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            {isLoading ? (
+            {isAnalyticsLoading ? (
               <Skeleton className="h-8 w-40" />
             ) : (
               <div className="text-2xl font-bold">{analyticsData?.topIndustry.name || 'N/A'}</div>
             )}
             <p className="text-xs text-muted-foreground mt-1">
-              {isLoading ? (
+              {isAnalyticsLoading ? (
                 <Skeleton className="h-3 w-16" />
               ) : (
                 `${analyticsData?.topIndustry.percentage || 0}% of all tenants`
@@ -236,13 +176,13 @@ export const TenantInsights: React.FC = () => {
             <MapPin className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            {isLoading ? (
+            {isAnalyticsLoading ? (
               <Skeleton className="h-8 w-40" />
             ) : (
               <div className="text-2xl font-bold">{analyticsData?.topLocation.name || 'N/A'}</div>
             )}
             <p className="text-xs text-muted-foreground mt-1">
-              {isLoading ? (
+              {isAnalyticsLoading ? (
                 <Skeleton className="h-3 w-16" />
               ) : (
                 `${analyticsData?.topLocation.percentage || 0}% of all tenants`
@@ -304,6 +244,7 @@ export const TenantInsights: React.FC = () => {
             <SelectItem value="active">Active</SelectItem>
             <SelectItem value="trial">Trial</SelectItem>
             <SelectItem value="expired">Expired</SelectItem>
+            <SelectItem value="onboarding">Onboarding</SelectItem>
           </SelectContent>
         </Select>
       </div>
@@ -322,36 +263,66 @@ export const TenantInsights: React.FC = () => {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {filteredTenants.map((tenant) => (
-              <TableRow key={tenant.id}>
-                <TableCell>
-                  <div>
-                    <p className="font-medium">{tenant.name}</p>
-                    <p className="text-sm text-muted-foreground">{tenant.industry} • {tenant.location}</p>
-                  </div>
-                </TableCell>
-                <TableCell>{getStatusBadge(tenant.status)}</TableCell>
-                <TableCell>{tenant.plan}</TableCell>
-                <TableCell>{tenant.users}</TableCell>
-                <TableCell>{tenant.providers}</TableCell>
-                <TableCell>{tenant.activeSince}</TableCell>
-                <TableCell className="text-right">
-                  <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                      <Button variant="ghost" size="icon">
-                        <MoreHorizontal className="h-4 w-4" />
-                      </Button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end">
-                      <DropdownMenuItem>View Details</DropdownMenuItem>
-                      <DropdownMenuItem>Analytics</DropdownMenuItem>
-                      <DropdownMenuSeparator />
-                      <DropdownMenuItem>Contact Admin</DropdownMenuItem>
-                    </DropdownMenuContent>
-                  </DropdownMenu>
+            {isTenantsLoading ? (
+              // Loading state - show skeleton rows
+              Array(5).fill(0).map((_, index) => (
+                <TableRow key={`skeleton-${index}`}>
+                  <TableCell>
+                    <div>
+                      <Skeleton className="h-5 w-32 mb-1" />
+                      <Skeleton className="h-3 w-24" />
+                    </div>
+                  </TableCell>
+                  <TableCell><Skeleton className="h-6 w-16" /></TableCell>
+                  <TableCell><Skeleton className="h-4 w-20" /></TableCell>
+                  <TableCell><Skeleton className="h-4 w-10" /></TableCell>
+                  <TableCell><Skeleton className="h-4 w-10" /></TableCell>
+                  <TableCell><Skeleton className="h-4 w-24" /></TableCell>
+                  <TableCell className="text-right">
+                    <Skeleton className="h-8 w-8 ml-auto" />
+                  </TableCell>
+                </TableRow>
+              ))
+            ) : filteredTenants.length > 0 ? (
+              // Show actual tenant data
+              filteredTenants.map((tenant) => (
+                <TableRow key={tenant.id}>
+                  <TableCell>
+                    <div>
+                      <p className="font-medium">{tenant.name}</p>
+                      <p className="text-sm text-muted-foreground">{tenant.industry} • {tenant.location}</p>
+                    </div>
+                  </TableCell>
+                  <TableCell>{getStatusBadge(tenant.status)}</TableCell>
+                  <TableCell>{tenant.plan}</TableCell>
+                  <TableCell>{tenant.users}</TableCell>
+                  <TableCell>{tenant.providers}</TableCell>
+                  <TableCell>{tenant.activeSince}</TableCell>
+                  <TableCell className="text-right">
+                    <DropdownMenu>
+                      <DropdownMenuTrigger asChild>
+                        <Button variant="ghost" size="icon">
+                          <MoreHorizontal className="h-4 w-4" />
+                        </Button>
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent align="end">
+                        <DropdownMenuItem>View Details</DropdownMenuItem>
+                        <DropdownMenuItem>Analytics</DropdownMenuItem>
+                        <DropdownMenuSeparator />
+                        <DropdownMenuItem>Contact Admin</DropdownMenuItem>
+                      </DropdownMenuContent>
+                    </DropdownMenu>
+                  </TableCell>
+                </TableRow>
+              ))
+            ) : (
+              // No results found
+              <TableRow>
+                <TableCell colSpan={7} className="text-center py-8 text-muted-foreground">
+                  No tenants found matching your search criteria.
                 </TableCell>
               </TableRow>
-            ))}
+            )}
           </TableBody>
         </Table>
       </div>
