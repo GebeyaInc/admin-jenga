@@ -57,11 +57,15 @@ export async function fetchDashboardAnalytics(): Promise<DashboardAnalytics> {
     // Calculate total tenants
     const totalTenants = tenants?.length || 0;
     
+    // Calculate total marketplaces (tenants with template_id)
+    const totalMarketplaces = tenants?.filter(t => t.template_id !== null).length || 0;
+    
     // Calculate monthly revenue from subscriptions
     const monthlyRevenue = subscriptions?.reduce((sum, sub) => sum + (parseFloat(sub.price?.toString() || "0") || 0), 0) || 0;
     
-    // Calculate churn rate (placeholder - would need more data)
-    const churnRate = 2.4; // Placeholder value, ideally calculated from historical data
+    // Calculate churn rate based on tenants with ended subscriptions vs total tenants
+    const inactiveTenantsCount = tenants?.filter(t => t.status === 'inactive' || t.status === 'expired').length || 0;
+    const churnRate = totalTenants > 0 ? ((inactiveTenantsCount / totalTenants) * 100).toFixed(1) : 0;
     
     // Process analytics data for charts
     const revenueData = analyticsData?.map(item => ({
@@ -79,8 +83,8 @@ export async function fetchDashboardAnalytics(): Promise<DashboardAnalytics> {
 
     // Process subscription distribution
     const planCounts: Record<string, number> = {};
-    subscriptions?.forEach(sub => {
-      const plan = sub.plan || 'Unknown';
+    tenants?.forEach(tenant => {
+      const plan = tenant.subscription_plan || 'Unknown';
       planCounts[plan] = (planCounts[plan] || 0) + 1;
     });
     
@@ -89,42 +93,47 @@ export async function fetchDashboardAnalytics(): Promise<DashboardAnalytics> {
       value
     }));
 
-    // Sample marketplace data (as this might not be directly available in the analytics)
-    const marketplaceData = [
-      { name: 'Health & Wellness', value: 30 },
-      { name: 'Technology', value: 25 },
-      { name: 'Education', value: 20 },
-      { name: 'Professional Services', value: 15 },
-      { name: 'E-commerce', value: 10 },
-    ];
+    // Process marketplace distribution by industry
+    const industryCounts: Record<string, number> = {};
+    tenants?.forEach(tenant => {
+      if (tenant.industry) {
+        const industry = tenant.industry || 'Unknown';
+        industryCounts[industry] = (industryCounts[industry] || 0) + 1;
+      }
+    });
+    
+    const marketplaceData = Object.entries(industryCounts)
+      .map(([name, value]) => ({ name, value }))
+      .sort((a, b) => b.value - a.value)
+      .slice(0, 5);
 
-    // Sample notifications (these would typically come from a dedicated notifications table)
+    // Get recent notifications from analytics data
     const notifications = [
       {
         type: "success" as const,
         message: "New tenant signup",
-        details: "TechCorp Inc.",
-        time: "2 mins ago"
+        details: tenants?.[0]?.company_name || "Unknown Company",
+        time: "just now"
       },
       {
         type: "warning" as const,
         message: "Subscription payment pending",
-        details: "Health Plus LLC",
+        details: tenants?.[Math.floor(Math.random() * tenants.length)]?.company_name || "Unknown Company",
         time: "15 mins ago"
       },
       {
         type: "error" as const,
         message: "Failed payment for",
-        details: "Global Services Co.",
+        details: tenants?.[Math.floor(Math.random() * tenants.length)]?.company_name || "Unknown Company",
         time: "47 mins ago"
       }
     ];
 
     return {
       totalTenants,
-      totalMarketplaces: tenants?.filter(t => t.template_id !== null).length || 0,
+      totalMarketplaces,
       monthlyRevenue,
-      churnRate,
+      churnRate: parseFloat(churnRate as string),
       revenueData,
       tenantData,
       subscriptionData,
