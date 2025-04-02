@@ -1,55 +1,56 @@
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 @layer base {
   :root {
-    /* Base Colors */
-    --background: 210 40% 98%;
-    --foreground: 264 20% 15%;
+    /* Base Colors - Dark Theme Based on Gebeya Image */
+    --background: 222 47% 11%;
+    --foreground: 0 0% 100%;
     
     /* Card & UI Elements */
-    --card: 0 0% 100%;
-    --card-foreground: 264 20% 15%;
+    --card: 222 47% 13%;
+    --card-foreground: 0 0% 100%;
     
-    --popover: 0 0% 100%;
-    --popover-foreground: 264 20% 15%;
+    --popover: 222 47% 11%;
+    --popover-foreground: 0 0% 100%;
     
     /* Interactive Elements - Gebeya Magenta */
     --primary: 326 89% 61%;
-    --primary-foreground: 210 40% 98%;
+    --primary-foreground: 0 0% 100%;
     
     /* Secondary - Orange */
     --secondary: 24 94% 53%;
-    --secondary-foreground: 210 40% 98%;
+    --secondary-foreground: 0 0% 100%;
     
     /* Accent - Softer Orange */
     --accent: 30 96% 67%;
-    --accent-foreground: 264 20% 15%;
+    --accent-foreground: 222 47% 11%;
     
     /* System Colors */
-    --muted: 210 40% 96%;
-    --muted-foreground: 215 16% 47%;
+    --muted: 223 47% 20%;
+    --muted-foreground: 220 8% 76%;
     
     --destructive: 0 84% 60%;
-    --destructive-foreground: 210 40% 98%;
+    --destructive-foreground: 0 0% 98%;
     
     /* Border & Input */
-    --border: 214 32% 91%;
-    --input: 214 32% 91%;
+    --border: 223 47% 18%;
+    --input: 223 47% 18%;
     --ring: 326 89% 61%;
     
     /* Radius */
     --radius: 0.75rem;
     
-    /* Sidebar - Dark Purple */
-    --sidebar-background: 264 20% 15%;
+    /* Sidebar - Dark Blue */
+    --sidebar-background: 222 47% 11%;
     --sidebar-foreground: 0 0% 100%;
     --sidebar-primary: 326 89% 61%;
     --sidebar-primary-foreground: 0 0% 100%;
     --sidebar-accent: 30 96% 67%;
-    --sidebar-accent-foreground: 264 20% 15%;
-    --sidebar-border: 264 15% 25%;
+    --sidebar-accent-foreground: 222 47% 11%;
+    --sidebar-border: 223 47% 18%;
     --sidebar-ring: 326 89% 61%;
   }
 }
@@ -86,11 +87,11 @@
   }
   
   ::-webkit-scrollbar-track {
-    @apply bg-secondary rounded-full;
+    @apply bg-muted rounded-full;
   }
   
   ::-webkit-scrollbar-thumb {
-    @apply bg-muted-foreground/30 rounded-full transition-colors hover:bg-muted-foreground/50;
+    @apply bg-primary/50 rounded-full transition-colors hover:bg-primary/70;
   }
   
   /* Page Transitions */
@@ -104,11 +105,11 @@
   
   /* Glass Effect */
   .glass {
-    @apply bg-white/80 backdrop-blur-lg border border-white/20 shadow-sm;
+    @apply bg-card/80 backdrop-blur-lg border border-white/10 shadow-sm;
   }
   
   .glass-dark {
-    @apply bg-slate-900/80 backdrop-blur-lg border border-slate-700/20 shadow-lg;
+    @apply bg-card/90 backdrop-blur-lg border border-border/30 shadow-lg;
   }
   
   /* Loading Animation */
@@ -150,6 +151,19 @@
   }
   
   .hover-glow:hover {
-    @apply shadow-[0_0_10px_rgba(59,130,246,0.5)];
+    @apply shadow-[0_0_10px_rgba(217,70,239,0.5)];
+  }
+
+  /* Gebeya specific gradients */
+  .gebeya-gradient {
+    @apply bg-gradient-to-r from-gebeya-pink via-gebeya-orange to-accent;
+  }
+  
+  .gebeya-badge {
+    @apply bg-background p-1 border border-border rounded-lg flex items-center gap-2;
+  }
+  
+  .gebeya-gradient-text {
+    @apply text-transparent bg-clip-text bg-gradient-to-r from-gebeya-pink to-gebeya-orange;
   }
 }

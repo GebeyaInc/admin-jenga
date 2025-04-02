@@ -1,3 +1,4 @@
+
 import type { Config } from "tailwindcss";
 
 export default {
@@ -65,9 +66,9 @@ export default {
 				gebeya: {
 					pink: '#D946EF',
 					orange: '#F97316',
-					'dark-purple': '#1A1F2C',
-					'charcoal-gray': '#403E43',
-					'dark-charcoal': '#221F26'
+					'dark-blue': '#0E1523',
+					'medium-blue': '#1A1F2C', 
+					'light-blue': '#2A3142'
 				}
 			},
 			borderRadius: {
@@ -133,8 +134,8 @@ export default {
 			boxShadow: {
 				'glass': '0 0 10px rgba(255, 255, 255, 0.1), 0 0 20px rgba(255, 255, 255, 0.05)',
 				'neomorphic': '8px 8px 16px #e6e6e6, -8px -8px 16px #ffffff',
-				'neomorphic-dark': '8px 8px 16px #151515, -8px -8px 16px #252525',
-				'subtle': '0 2px 10px rgba(0, 0, 0, 0.05)'
+				'neomorphic-dark': '8px 8px 16px #0a0e16, -8px -8px 16px #1a1f2c',
+				'subtle': '0 2px 10px rgba(0, 0, 0, 0.3)'
 			},
 			backdropBlur: {
 				'xs': '2px'

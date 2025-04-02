@@ -28,7 +28,7 @@ export const Header: React.FC<HeaderProps> = ({ toggleSidebar, sidebarCollapsed 
   return (
     <header 
       className={cn(
-        "h-16 flex items-center justify-between border-b px-6 transition-all duration-300 ease-in-out bg-white",
+        "h-16 flex items-center justify-between border-b border-border px-6 transition-all duration-300 ease-in-out bg-background",
         sidebarCollapsed ? "ml-20" : "ml-64"
       )}
     >
@@ -37,7 +37,7 @@ export const Header: React.FC<HeaderProps> = ({ toggleSidebar, sidebarCollapsed 
           variant="ghost" 
           size="icon" 
           onClick={toggleSidebar}
-          className="hover:bg-accent"
+          className="hover:bg-muted"
         >
           {sidebarCollapsed ? <Menu className="h-5 w-5" /> : <X className="h-5 w-5" />}
         </Button>
@@ -49,7 +49,7 @@ export const Header: React.FC<HeaderProps> = ({ toggleSidebar, sidebarCollapsed 
           <input 
             type="search" 
             placeholder="Search..." 
-            className="w-full py-2 pl-10 pr-4 text-sm bg-secondary border-0 rounded-md focus-visible:ring-1 focus-visible:ring-primary outline-none"
+            className="w-full py-2 pl-10 pr-4 text-sm bg-muted border-0 rounded-md focus-visible:ring-1 focus-visible:ring-primary outline-none"
           />
         </div>
       </div>
@@ -58,7 +58,7 @@ export const Header: React.FC<HeaderProps> = ({ toggleSidebar, sidebarCollapsed 
         <Button 
           variant="ghost" 
           size="icon" 
-          className="relative hover:bg-accent"
+          className="relative hover:bg-muted"
           aria-label="Notifications"
         >
           <Bell className="h-5 w-5" />
@@ -69,7 +69,7 @@ export const Header: React.FC<HeaderProps> = ({ toggleSidebar, sidebarCollapsed 
           <DropdownMenuTrigger asChild>
             <Button 
               variant="ghost" 
-              className="flex items-center gap-x-2 hover:bg-accent"
+              className="flex items-center gap-x-2 hover:bg-muted"
             >
               <Avatar className="h-8 w-8">
                 <AvatarImage src="" />
