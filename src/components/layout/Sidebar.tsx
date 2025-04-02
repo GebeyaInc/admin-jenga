@@ -4,7 +4,6 @@ import { Link, useLocation } from 'react-router-dom';
 import { cn } from '@/lib/utils';
 import { 
   LayoutDashboard, 
-  Users, 
   Building, 
   CreditCard, 
   ActivitySquare, 
@@ -29,12 +28,6 @@ const navItems: NavItem[] = [
     title: 'Dashboard', 
     icon: LayoutDashboard, 
     path: '/dashboard', 
-    section: 'main' 
-  },
-  { 
-    title: 'Team Members', 
-    icon: Users, 
-    path: '/team', 
     section: 'main' 
   },
   { 
