@@ -12,6 +12,10 @@ export interface TenantAnalytics {
     name: string;
     percentage: number;
   };
+  industryDistribution: {
+    name: string;
+    value: number;
+  }[];
 }
 
 export async function fetchTenantAnalytics(): Promise<TenantAnalytics> {
@@ -41,6 +45,12 @@ export async function fetchTenantAnalytics(): Promise<TenantAnalytics> {
         industryCount[tenant.industry] = (industryCount[tenant.industry] || 0) + 1;
       }
     });
+    
+    // Create industry distribution array for chart
+    const industryDistribution = Object.entries(industryCount).map(([industry, count]) => ({
+      name: formatIndustryName(industry),
+      value: count
+    })).sort((a, b) => b.value - a.value);
     
     // Get top industry
     let topIndustry = { name: "N/A", count: 0, percentage: 0 };
@@ -84,7 +94,8 @@ export async function fetchTenantAnalytics(): Promise<TenantAnalytics> {
       topLocation: {
         name: topLocation.name,
         percentage: topLocation.percentage
-      }
+      },
+      industryDistribution: industryDistribution.slice(0, 5) // Return top 5 industries
     };
   } catch (error) {
     console.error("Error in fetchTenantAnalytics:", error);
@@ -99,7 +110,8 @@ export async function fetchTenantAnalytics(): Promise<TenantAnalytics> {
       topLocation: {
         name: "N/A",
         percentage: 0
-      }
+      },
+      industryDistribution: []
     };
   }
 }

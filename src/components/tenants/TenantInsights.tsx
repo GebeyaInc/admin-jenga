@@ -256,7 +256,9 @@ export const TenantInsights: React.FC = () => {
         <Chart 
           title="Industry Distribution" 
           description="Breakdown by tenant industry"
-          data={industryData}
+          data={analyticsData?.industryDistribution && analyticsData.industryDistribution.length > 0 
+            ? analyticsData.industryDistribution 
+            : [{ name: 'No Data', value: 100 }]}
           type="pie"
           height={300}
         />

@@ -46,7 +46,9 @@ export const DashboardOverview: React.FC = () => {
   const revenueData = dashboardData?.revenueData?.length ? dashboardData.revenueData : [];
   const tenantData = dashboardData?.tenantData?.length ? dashboardData.tenantData : [];
   const subscriptionData = dashboardData?.subscriptionData?.length ? dashboardData.subscriptionData : [];
-  const marketplaceData = dashboardData?.marketplaceData?.length ? dashboardData.marketplaceData : [];
+  const marketplaceData = dashboardData?.marketplaceData?.length 
+    ? dashboardData.marketplaceData 
+    : [{ name: 'No Data', value: 100 }];
   const notifications = dashboardData?.notifications || [];
 
   return (
