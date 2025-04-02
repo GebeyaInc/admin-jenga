@@ -42,6 +42,9 @@ import {
   SelectTrigger,
   SelectValue 
 } from '@/components/ui/select';
+import { useQuery } from '@tanstack/react-query';
+import { fetchTenantAnalytics } from '@/services/tenantService';
+import { Skeleton } from '@/components/ui/skeleton';
 
 const tenants = [
   {
@@ -136,6 +139,14 @@ export const TenantInsights: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
   
+  // Fetch tenant analytics data
+  const { data: analyticsData, isLoading } = useQuery({
+    queryKey: ['tenantAnalytics'],
+    queryFn: fetchTenantAnalytics,
+    staleTime: 5 * 60 * 1000, // 5 minutes
+    refetchInterval: 5 * 60 * 1000, // Refetch every 5 minutes
+  });
+  
   const filteredTenants = tenants.filter(tenant => {
     const matchesSearch = tenant.name.toLowerCase().includes(searchTerm.toLowerCase()) || 
                          tenant.industry.toLowerCase().includes(searchTerm.toLowerCase());
@@ -173,7 +184,11 @@ export const TenantInsights: React.FC = () => {
             <Users className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">125</div>
+            {isLoading ? (
+              <Skeleton className="h-8 w-16" />
+            ) : (
+              <div className="text-2xl font-bold">{analyticsData?.totalTenants || 0}</div>
+            )}
             <p className="text-xs text-muted-foreground mt-1">
               12% increase from last month
             </p>
@@ -185,7 +200,11 @@ export const TenantInsights: React.FC = () => {
             <ShoppingBag className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">96</div>
+            {isLoading ? (
+              <Skeleton className="h-8 w-16" />
+            ) : (
+              <div className="text-2xl font-bold">{analyticsData?.activeMarketplaces || 0}</div>
+            )}
             <p className="text-xs text-muted-foreground mt-1">
               8 new marketplaces this month
             </p>
@@ -197,9 +216,17 @@ export const TenantInsights: React.FC = () => {
             <Globe className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">Technology</div>
+            {isLoading ? (
+              <Skeleton className="h-8 w-40" />
+            ) : (
+              <div className="text-2xl font-bold">{analyticsData?.topIndustry.name || 'N/A'}</div>
+            )}
             <p className="text-xs text-muted-foreground mt-1">
-              35% of all tenants
+              {isLoading ? (
+                <Skeleton className="h-3 w-16" />
+              ) : (
+                `${analyticsData?.topIndustry.percentage || 0}% of all tenants`
+              )}
             </p>
           </CardContent>
         </Card>
@@ -209,9 +236,17 @@ export const TenantInsights: React.FC = () => {
             <MapPin className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">United States</div>
+            {isLoading ? (
+              <Skeleton className="h-8 w-40" />
+            ) : (
+              <div className="text-2xl font-bold">{analyticsData?.topLocation.name || 'N/A'}</div>
+            )}
             <p className="text-xs text-muted-foreground mt-1">
-              45% of all tenants
+              {isLoading ? (
+                <Skeleton className="h-3 w-16" />
+              ) : (
+                `${analyticsData?.topLocation.percentage || 0}% of all tenants`
+              )}
             </p>
           </CardContent>
         </Card>
