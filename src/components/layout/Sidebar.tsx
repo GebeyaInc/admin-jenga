@@ -1,9 +1,7 @@
-
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { cn } from '@/lib/utils';
 import { 
-  LayoutDashboard, 
   Building, 
   CreditCard, 
   ActivitySquare, 
@@ -24,12 +22,6 @@ interface NavItem {
 }
 
 const navItems: NavItem[] = [
-  { 
-    title: 'Dashboard', 
-    icon: LayoutDashboard, 
-    path: '/dashboard', 
-    section: 'main' 
-  },
   { 
     title: 'Tenants', 
     icon: Building, 

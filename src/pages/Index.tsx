@@ -6,8 +6,8 @@ const Index: React.FC = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    // Redirect to dashboard
-    navigate('/dashboard');
+    // Redirect to tenants page instead of dashboard
+    navigate('/tenants');
   }, [navigate]);
 
   return <div className="min-h-screen bg-background"></div>;
