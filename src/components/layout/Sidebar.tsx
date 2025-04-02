@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { cn } from '@/lib/utils';
@@ -23,7 +24,7 @@ interface NavItem {
 
 const navItems: NavItem[] = [
   { 
-    title: 'Tenants', 
+    title: 'Summary', 
     icon: Building, 
     path: '/tenants', 
     section: 'main' 

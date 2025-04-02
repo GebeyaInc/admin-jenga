@@ -172,7 +172,7 @@ export const TenantInsights: React.FC = () => {
     <>
       <div className="flex justify-between items-center mb-6">
         <div>
-          <h1 className="text-2xl sm:text-3xl font-bold tracking-tight">Tenants</h1>
+          <h1 className="text-2xl sm:text-3xl font-bold tracking-tight">Summary</h1>
           <p className="text-muted-foreground mt-1">Tenant engagement and marketplace insights</p>
         </div>
       </div>
