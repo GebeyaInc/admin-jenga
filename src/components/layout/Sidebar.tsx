@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { cn } from '@/lib/utils';
@@ -55,9 +56,20 @@ export const Sidebar: React.FC<SidebarProps> = ({ collapsed }) => {
     >
       <div className="flex h-16 items-center px-4 border-b">
         {!collapsed ? (
-          <h1 className="text-xl font-medium">Admin Portal</h1>
+          <div className="flex items-center gap-2">
+            <img 
+              src="/lovable-uploads/cbd3b64a-ee2d-4141-9949-c5f04d5fe497.png" 
+              alt="Gebeya Logo" 
+              className="h-10 w-auto" 
+            />
+            <h1 className="text-xl font-medium">Jenga</h1>
+          </div>
         ) : (
-          <div className="mx-auto text-xl font-bold">AP</div>
+          <img 
+            src="/lovable-uploads/cbd3b64a-ee2d-4141-9949-c5f04d5fe497.png" 
+            alt="Gebeya Logo" 
+            className="h-10 w-auto mx-auto" 
+          />
         )}
       </div>
       
