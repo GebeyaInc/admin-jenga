@@ -1,10 +1,8 @@
-
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { cn } from '@/lib/utils';
 import { 
   Building, 
-  CreditCard, 
   ActivitySquare, 
   Code, 
   Bell,
@@ -27,12 +25,6 @@ const navItems: NavItem[] = [
     title: 'Summary', 
     icon: Building, 
     path: '/tenants', 
-    section: 'main' 
-  },
-  { 
-    title: 'Subscriptions', 
-    icon: CreditCard, 
-    path: '/subscriptions', 
     section: 'main' 
   },
   { 
