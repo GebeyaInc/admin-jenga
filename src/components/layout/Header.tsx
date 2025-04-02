@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import { 
   Bell, 
   ChevronDown, 
@@ -16,7 +16,13 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger 
 } from '@/components/ui/dropdown-menu';
+import {
+  HoverCard,
+  HoverCardContent,
+  HoverCardTrigger,
+} from "@/components/ui/hover-card";
 import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
 import { cn } from '@/lib/utils';
 
 interface HeaderProps {
@@ -25,10 +31,16 @@ interface HeaderProps {
 }
 
 export const Header: React.FC<HeaderProps> = ({ toggleSidebar, sidebarCollapsed }) => {
+  const [notifications] = useState([
+    { id: 1, message: "New tenant registered", time: "Just now" },
+    { id: 2, message: "Subscription payment received", time: "2 hours ago" },
+    { id: 3, message: "System update completed", time: "Yesterday" }
+  ]);
+
   return (
     <header 
       className={cn(
-        "h-16 flex items-center justify-between border-b px-6 transition-all duration-300 ease-in-out bg-white",
+        "h-16 flex items-center justify-between border-b px-6 transition-all duration-300 ease-in-out bg-white shadow-sm",
         sidebarCollapsed ? "ml-20" : "ml-64"
       )}
     >
@@ -49,29 +61,55 @@ export const Header: React.FC<HeaderProps> = ({ toggleSidebar, sidebarCollapsed 
           <input 
             type="search" 
             placeholder="Search..." 
-            className="w-full py-2 pl-10 pr-4 text-sm bg-secondary border-0 rounded-md focus-visible:ring-1 focus-visible:ring-primary outline-none"
+            className="w-full py-2 pl-10 pr-4 text-sm bg-secondary/10 border border-border rounded-md focus-visible:ring-1 focus-visible:ring-primary focus:border-primary outline-none"
           />
         </div>
       </div>
       
       <div className="flex items-center gap-x-4">
-        <Button 
-          variant="ghost" 
-          size="icon" 
-          className="relative hover:bg-accent"
-          aria-label="Notifications"
-        >
-          <Bell className="h-5 w-5" />
-          <span className="absolute top-1 right-1 h-2 w-2 rounded-full bg-primary"></span>
-        </Button>
+        <HoverCard>
+          <HoverCardTrigger asChild>
+            <Button 
+              variant="ghost" 
+              size="icon" 
+              className="relative hover:bg-accent"
+              aria-label="Notifications"
+            >
+              <Bell className="h-5 w-5" />
+              <span className="absolute top-1 right-1 h-2 w-2 rounded-full bg-primary"></span>
+            </Button>
+          </HoverCardTrigger>
+          <HoverCardContent className="w-80 p-0">
+            <div className="p-4 border-b">
+              <h3 className="font-medium">Notifications</h3>
+            </div>
+            <div className="max-h-[300px] overflow-y-auto">
+              {notifications.map((notification) => (
+                <div key={notification.id} className="p-3 hover:bg-muted/50 cursor-pointer border-b">
+                  <div className="flex justify-between items-start">
+                    <p className="text-sm font-medium">{notification.message}</p>
+                    <Badge variant="outline" className="text-xs ml-2 bg-primary/10 hover:bg-primary/20 border-primary/20 text-primary">
+                      {notification.time}
+                    </Badge>
+                  </div>
+                </div>
+              ))}
+            </div>
+            <div className="p-2 text-center border-t">
+              <Button variant="ghost" size="sm" className="text-xs w-full text-muted-foreground hover:text-foreground">
+                View all notifications
+              </Button>
+            </div>
+          </HoverCardContent>
+        </HoverCard>
         
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button 
               variant="ghost" 
-              className="flex items-center gap-x-2 hover:bg-accent"
+              className="flex items-center gap-x-2 hover:bg-accent group"
             >
-              <Avatar className="h-8 w-8">
+              <Avatar className="h-8 w-8 border-2 border-transparent group-hover:border-primary transition-colors">
                 <AvatarImage src="" />
                 <AvatarFallback className="bg-primary text-primary-foreground">JD</AvatarFallback>
               </Avatar>

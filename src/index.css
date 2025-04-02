@@ -5,52 +5,52 @@
 @layer base {
   :root {
     /* Base Colors */
-    --background: 210 40% 98%;
-    --foreground: 264 20% 15%;
+    --background: 0 0% 100%;
+    --foreground: 240 10% 20%;
     
     /* Card & UI Elements */
     --card: 0 0% 100%;
-    --card-foreground: 264 20% 15%;
+    --card-foreground: 240 10% 20%;
     
     --popover: 0 0% 100%;
-    --popover-foreground: 264 20% 15%;
+    --popover-foreground: 240 10% 20%;
     
     /* Interactive Elements - Gebeya Magenta */
-    --primary: 326 89% 61%;
-    --primary-foreground: 210 40% 98%;
+    --primary: 330 90% 55%;
+    --primary-foreground: 0 0% 100%;
     
-    /* Secondary - Orange */
-    --secondary: 24 94% 53%;
-    --secondary-foreground: 210 40% 98%;
+    /* Secondary - Gebeya Orange */
+    --secondary: 25 95% 55%;
+    --secondary-foreground: 0 0% 100%;
     
     /* Accent - Softer Orange */
-    --accent: 30 96% 67%;
-    --accent-foreground: 264 20% 15%;
+    --accent: 25 95% 65%;
+    --accent-foreground: 240 10% 20%;
     
     /* System Colors */
     --muted: 210 40% 96%;
     --muted-foreground: 215 16% 47%;
     
     --destructive: 0 84% 60%;
-    --destructive-foreground: 210 40% 98%;
+    --destructive-foreground: 0 0% 100%;
     
     /* Border & Input */
     --border: 214 32% 91%;
     --input: 214 32% 91%;
-    --ring: 326 89% 61%;
+    --ring: 330 90% 55%;
     
     /* Radius */
     --radius: 0.75rem;
     
-    /* Sidebar - Dark Purple */
-    --sidebar-background: 264 20% 15%;
+    /* Sidebar - Dark Theme */
+    --sidebar-background: 240 10% 20%;
     --sidebar-foreground: 0 0% 100%;
-    --sidebar-primary: 326 89% 61%;
+    --sidebar-primary: 330 90% 55%;
     --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 30 96% 67%;
-    --sidebar-accent-foreground: 264 20% 15%;
-    --sidebar-border: 264 15% 25%;
-    --sidebar-ring: 326 89% 61%;
+    --sidebar-accent: 25 95% 55%;
+    --sidebar-accent-foreground: 0 0% 100%;
+    --sidebar-border: 240 10% 25%;
+    --sidebar-ring: 330 90% 55%;
   }
 }
 
