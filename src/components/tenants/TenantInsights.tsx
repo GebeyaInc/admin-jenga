@@ -253,7 +253,6 @@ export const TenantInsights: React.FC = () => {
               <TableHead>Tenant</TableHead>
               <TableHead>Status</TableHead>
               <TableHead>Plan</TableHead>
-              <TableHead>Users</TableHead>
               <TableHead>Providers</TableHead>
               <TableHead>Active Since</TableHead>
               <TableHead className="text-right">Actions</TableHead>
@@ -272,7 +271,6 @@ export const TenantInsights: React.FC = () => {
                   <TableCell><Skeleton className="h-6 w-16" /></TableCell>
                   <TableCell><Skeleton className="h-4 w-20" /></TableCell>
                   <TableCell><Skeleton className="h-4 w-10" /></TableCell>
-                  <TableCell><Skeleton className="h-4 w-10" /></TableCell>
                   <TableCell><Skeleton className="h-4 w-24" /></TableCell>
                   <TableCell className="text-right">
                     <Skeleton className="h-8 w-8 ml-auto" />
@@ -290,7 +288,6 @@ export const TenantInsights: React.FC = () => {
                   </TableCell>
                   <TableCell>{getStatusBadge(tenant.status)}</TableCell>
                   <TableCell>{tenant.plan}</TableCell>
-                  <TableCell>{tenant.users}</TableCell>
                   <TableCell>{tenant.providers}</TableCell>
                   <TableCell>{tenant.activeSince}</TableCell>
                   <TableCell className="text-right">
@@ -312,7 +309,7 @@ export const TenantInsights: React.FC = () => {
               ))
             ) : (
               <TableRow>
-                <TableCell colSpan={7} className="text-center py-8 text-muted-foreground">
+                <TableCell colSpan={6} className="text-center py-8 text-muted-foreground">
                   No tenants found matching your search criteria.
                 </TableCell>
               </TableRow>
