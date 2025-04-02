@@ -18,12 +18,6 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
-import { 
-  HoverCard,
-  HoverCardContent,
-  HoverCardTrigger,
-} from '@/components/ui/hover-card';
-import { Badge } from '@/components/ui/badge';
 
 interface HeaderProps {
   toggleSidebar: () => void;
@@ -34,7 +28,7 @@ export const Header: React.FC<HeaderProps> = ({ toggleSidebar, sidebarCollapsed 
   return (
     <header 
       className={cn(
-        "h-16 flex items-center justify-between border-b border-border px-6 transition-all duration-300 ease-in-out bg-card",
+        "h-16 flex items-center justify-between border-b px-6 transition-all duration-300 ease-in-out bg-white",
         sidebarCollapsed ? "ml-20" : "ml-64"
       )}
     >
@@ -43,7 +37,7 @@ export const Header: React.FC<HeaderProps> = ({ toggleSidebar, sidebarCollapsed 
           variant="ghost" 
           size="icon" 
           onClick={toggleSidebar}
-          className="hover:bg-muted"
+          className="hover:bg-accent"
         >
           {sidebarCollapsed ? <Menu className="h-5 w-5" /> : <X className="h-5 w-5" />}
         </Button>
@@ -55,58 +49,31 @@ export const Header: React.FC<HeaderProps> = ({ toggleSidebar, sidebarCollapsed 
           <input 
             type="search" 
             placeholder="Search..." 
-            className="w-full py-2 pl-10 pr-4 text-sm bg-muted/50 border-0 rounded-md focus-visible:ring-1 focus-visible:ring-primary outline-none"
+            className="w-full py-2 pl-10 pr-4 text-sm bg-secondary border-0 rounded-md focus-visible:ring-1 focus-visible:ring-primary outline-none"
           />
         </div>
       </div>
       
       <div className="flex items-center gap-x-4">
-        <HoverCard>
-          <HoverCardTrigger asChild>
-            <Button 
-              variant="ghost" 
-              size="icon" 
-              className="relative hover:bg-muted"
-              aria-label="Notifications"
-            >
-              <Bell className="h-5 w-5" />
-              <span className="absolute top-1 right-1 h-2 w-2 rounded-full bg-primary">
-                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75"></span>
-              </span>
-            </Button>
-          </HoverCardTrigger>
-          <HoverCardContent className="w-80">
-            <div className="space-y-2">
-              <h4 className="text-sm font-semibold">Recent Notifications</h4>
-              <div className="space-y-2">
-                <div className="flex items-start gap-x-2 p-2 rounded-md hover:bg-muted/50">
-                  <Badge variant="secondary" className="mt-0.5">New</Badge>
-                  <div>
-                    <p className="text-sm">New tenant registered</p>
-                    <p className="text-xs text-muted-foreground">2 minutes ago</p>
-                  </div>
-                </div>
-                <div className="flex items-start gap-x-2 p-2 rounded-md hover:bg-muted/50">
-                  <Badge variant="outline" className="mt-0.5">Update</Badge>
-                  <div>
-                    <p className="text-sm">System update completed</p>
-                    <p className="text-xs text-muted-foreground">1 hour ago</p>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </HoverCardContent>
-        </HoverCard>
+        <Button 
+          variant="ghost" 
+          size="icon" 
+          className="relative hover:bg-accent"
+          aria-label="Notifications"
+        >
+          <Bell className="h-5 w-5" />
+          <span className="absolute top-1 right-1 h-2 w-2 rounded-full bg-primary"></span>
+        </Button>
         
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button 
               variant="ghost" 
-              className="flex items-center gap-x-2 hover:bg-muted"
+              className="flex items-center gap-x-2 hover:bg-accent"
             >
               <Avatar className="h-8 w-8">
                 <AvatarImage src="" />
-                <AvatarFallback className="bg-primary/20 text-primary">JD</AvatarFallback>
+                <AvatarFallback className="bg-primary text-primary-foreground">JD</AvatarFallback>
               </Avatar>
               <div className="hidden md:block text-left">
                 <p className="text-sm font-medium">John Doe</p>
