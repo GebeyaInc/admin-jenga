@@ -62,7 +62,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ collapsed }) => {
               alt="Gebeya Logo" 
               className="h-10 w-auto" 
             />
-            <h1 className="text-xl font-medium">jengaAdmin</h1>
+            <h1 className="text-xl font-medium">Jenga</h1>
           </div>
         ) : (
           <img 
