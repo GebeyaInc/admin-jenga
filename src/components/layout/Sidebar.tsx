@@ -8,7 +8,8 @@ import {
   Code, 
   Bell,
   ChevronRight,
-  Megaphone 
+  Megaphone,
+  HeadsetIcon
 } from 'lucide-react';
 
 interface SidebarProps {
@@ -39,6 +40,12 @@ const navItems: NavItem[] = [
     title: 'Marketing', 
     icon: Megaphone, 
     path: '/marketing', 
+    section: 'management' 
+  },
+  { 
+    title: 'Customer Experience', 
+    icon: HeadsetIcon, 
+    path: '/cx', 
     section: 'management' 
   },
   { 
