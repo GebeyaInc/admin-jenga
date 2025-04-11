@@ -7,7 +7,8 @@ import {
   ActivitySquare, 
   Code, 
   Bell,
-  ChevronRight 
+  ChevronRight,
+  Megaphone 
 } from 'lucide-react';
 
 interface SidebarProps {
@@ -32,6 +33,12 @@ const navItems: NavItem[] = [
     title: 'Analytics', 
     icon: ActivitySquare, 
     path: '/analytics', 
+    section: 'management' 
+  },
+  { 
+    title: 'Marketing', 
+    icon: Megaphone, 
+    path: '/marketing', 
     section: 'management' 
   },
   { 
