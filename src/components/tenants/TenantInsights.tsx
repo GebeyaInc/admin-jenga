@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { 
   Table, 
@@ -91,16 +90,19 @@ export const TenantInsights: React.FC = () => {
   };
   
   const getStatusBadge = (status: string) => {
-    switch (status.toLowerCase()) {
+    const statusLower = status.toLowerCase();
+    
+    switch (statusLower) {
       case 'active':
-        return <Badge className="bg-green-500/20 text-green-700 hover:bg-green-500/30 border-green-500/30">{status}</Badge>;
+        return <Badge className="bg-green-500/20 text-green-700 hover:bg-green-500/30 border-green-500/30">Active</Badge>;
       case 'trial':
-        return <Badge className="bg-blue-500/20 text-blue-700 hover:bg-blue-500/30 border-blue-500/30">{status}</Badge>;
+        return <Badge className="bg-blue-500/20 text-blue-700 hover:bg-blue-500/30 border-blue-500/30">Trial</Badge>;
       case 'expired':
+        return <Badge className="bg-red-500/20 text-red-700 hover:bg-red-500/30 border-red-500/30">Expired</Badge>;
       case 'inactive':
-        return <Badge className="bg-red-500/20 text-red-700 hover:bg-red-500/30 border-red-500/30">{status}</Badge>;
+        return <Badge className="bg-red-500/20 text-red-700 hover:bg-red-500/30 border-red-500/30">Inactive</Badge>;
       case 'onboarding':
-        return <Badge className="bg-orange-500/20 text-orange-700 hover:bg-orange-500/30 border-orange-500/30">{status}</Badge>;
+        return <Badge className="bg-orange-500/20 text-orange-700 hover:bg-orange-500/30 border-orange-500/30">Onboarding</Badge>;
       default:
         return <Badge variant="outline">{status}</Badge>;
     }
