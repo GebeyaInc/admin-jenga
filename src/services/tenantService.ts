@@ -43,19 +43,23 @@ function mapTenantData(tenant: any): Tenant {
   // Generate consistent provider numbers
   const providers = generateProviderCount(tenant.id);
   
-  // Enhanced fix for company name - ensure we never return "Unnamed Tenant"
-  // Handle null, undefined, empty string, or "EMPTY" cases
-  let companyName = tenant.company_name;
-  
-  // Debug the tenant data
+  // Debug log for tenant data inspection
   console.log(`Tenant ${tenant.id} - Status: ${tenant.status}, Company: '${tenant.company_name}', Subdomain: '${tenant.subdomain}'`);
   
-  if (!companyName || companyName === "" || companyName.toUpperCase() === "EMPTY" || companyName === "Unnamed Tenant") {
-    // First try to use the subdomain if available
+  // Determine the tenant name based on available data
+  let companyName = tenant.company_name;
+  
+  // If company_name is missing, empty, or a placeholder, use fallbacks
+  if (!companyName || 
+      companyName === "" || 
+      companyName.toUpperCase() === "EMPTY" || 
+      companyName === "Unnamed Tenant") {
+      
+    // First fallback: Use subdomain if available
     if (tenant.subdomain && tenant.subdomain.trim() !== "") {
       companyName = tenant.subdomain.charAt(0).toUpperCase() + tenant.subdomain.slice(1) + " Marketplace";
     } else {
-      // As a last resort, use a portion of the ID
+      // Last resort: Use tenant ID
       companyName = `Tenant ${tenant.id.substring(0, 8)}`;
     }
   }
