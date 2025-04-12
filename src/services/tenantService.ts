@@ -43,9 +43,14 @@ function mapTenantData(tenant: any): Tenant {
   // Generate consistent provider numbers
   const providers = generateProviderCount(tenant.id);
   
+  // Get a proper name for the tenant, handling empty or "EMPTY" values
+  const companyName = tenant.company_name && tenant.company_name !== "EMPTY" 
+    ? tenant.company_name 
+    : `Unnamed Tenant (${tenant.subdomain || tenant.id.substring(0, 6)})`;
+  
   return {
     id: tenant.id,
-    name: tenant.company_name || `Unnamed Tenant`, // Add fallback name
+    name: companyName,
     industry: formatIndustryName(tenant.industry || 'unknown'),
     location: tenant.location || 'Unknown',
     status: tenant.status || 'Active',
@@ -75,7 +80,8 @@ export async function fetchTenants(): Promise<Tenant[]> {
         status,
         subscription_plan,
         created_at,
-        template_id
+        template_id,
+        subdomain
       `)
       .order('created_at', { ascending: false });
     
