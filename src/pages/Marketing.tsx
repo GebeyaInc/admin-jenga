@@ -12,6 +12,7 @@ import {
 import { MarketingCampaigns } from '@/components/marketing/MarketingCampaigns';
 import { MarketingAssets } from '@/components/marketing/MarketingAssets';
 import { MarketingPerformance } from '@/components/marketing/MarketingPerformance';
+import { ReferralSources } from '@/components/marketing/ReferralSources';
 
 const Marketing: React.FC = () => {
   return (
@@ -29,6 +30,7 @@ const Marketing: React.FC = () => {
             <TabsTrigger value="campaigns">Campaigns</TabsTrigger>
             <TabsTrigger value="assets">Assets & Resources</TabsTrigger>
             <TabsTrigger value="performance">Performance</TabsTrigger>
+            <TabsTrigger value="analytics">Analytics</TabsTrigger>
           </TabsList>
           <TabsContent value="campaigns">
             <MarketingCampaigns />
@@ -38,6 +40,11 @@ const Marketing: React.FC = () => {
           </TabsContent>
           <TabsContent value="performance">
             <MarketingPerformance />
+          </TabsContent>
+          <TabsContent value="analytics">
+            <div className="grid gap-6 grid-cols-1">
+              <ReferralSources />
+            </div>
           </TabsContent>
         </Tabs>
       </div>
