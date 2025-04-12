@@ -1,3 +1,4 @@
+
 import { supabase } from "@/integrations/supabase/client";
 
 export interface TenantAnalytics {
@@ -189,7 +190,7 @@ export async function fetchTenants(): Promise<Tenant[]> {
       
       return {
         id: tenant.id,
-        name: tenant.company_name,
+        name: tenant.company_name || `Unnamed Tenant`, // Add fallback name
         industry: formatIndustryName(tenant.industry || 'unknown'),
         location: tenant.location || 'Unknown',
         status: tenant.status || 'Active',
