@@ -43,9 +43,22 @@ function mapTenantData(tenant: any): Tenant {
   // Generate consistent provider numbers
   const providers = generateProviderCount(tenant.id);
   
+  // Fix for company name - ensure we never return "Unnamed Tenant"
+  // Handle null, undefined, empty string, or "EMPTY" cases
+  let companyName = tenant.company_name;
+  if (!companyName || companyName === "" || companyName.toUpperCase() === "EMPTY") {
+    // First try to use the subdomain if available
+    if (tenant.subdomain) {
+      companyName = tenant.subdomain.charAt(0).toUpperCase() + tenant.subdomain.slice(1) + " Marketplace";
+    } else {
+      // As a last resort, use a portion of the ID
+      companyName = `Tenant ${tenant.id.substring(0, 8)}`;
+    }
+  }
+  
   return {
     id: tenant.id,
-    name: tenant.company_name || `Unnamed Tenant`, // Add fallback name
+    name: companyName,
     industry: formatIndustryName(tenant.industry || 'unknown'),
     location: tenant.location || 'Unknown',
     status: tenant.status || 'Active',
@@ -75,7 +88,8 @@ export async function fetchTenants(): Promise<Tenant[]> {
         status,
         subscription_plan,
         created_at,
-        template_id
+        template_id,
+        subdomain
       `)
       .order('created_at', { ascending: false });
     
