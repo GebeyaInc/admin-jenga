@@ -2,8 +2,9 @@
 import { supabase } from "@/integrations/supabase/client";
 import { formatIndustryName, formatDate, formatPlanDisplay } from "@/utils/formatters";
 
-// Re-export the analytics functionality
-export { fetchTenantAnalytics, TenantAnalytics } from "./analyticsService";
+// Re-export the analytics functionality with explicit "export type" for the TenantAnalytics interface
+export { fetchTenantAnalytics } from "./analyticsService";
+export type { TenantAnalytics } from "./analyticsService";
 
 export interface Tenant {
   id: string;
