@@ -1,6 +1,13 @@
 stages:
   - build
   - deploy
+  - 🔀 merge-requests
+
+include:
+# Merge request validator
+  - project: "g-saas/infra/ci-cd-configs"
+    ref: prod
+    file: "/mr-checks/.mr-validation.yml"
 
 
 # This file is a template, and might need editing before it works on your project.
