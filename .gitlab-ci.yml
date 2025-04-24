@@ -1,9 +1,17 @@
 stages:
+  - install
+  - quality
   - build
   - deploy
   - 🔀 merge-requests
 
 include:
+
+# Sonarqube Quality Check
+  - project: "g-saas/infra/ci-cd-configs"
+    ref: sonarqube
+    file: "/vibe-coders-quality-check/.sonarqube-analysis-.yml"
+    
 # Merge request validator
   - project: "g-saas/infra/ci-cd-configs"
     ref: prod
